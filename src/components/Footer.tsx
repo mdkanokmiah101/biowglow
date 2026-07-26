@@ -18,16 +18,12 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-2">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#198754] to-emerald-400 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold">
-                <span className="text-[#198754]">Bio</span>
-                <span className="text-emerald-400">Glow</span>
-              </span>
+            <Link href="/" className="flex items-center mb-3">
+              <img
+                src="https://i.postimg.cc/TYc2LBv0/file-0000000099a88230b1470036d1ca89f6-edit-223370318576091.png"
+                alt="BioGlow"
+                className="h-8 w-auto object-contain"
+              />
             </Link>
             <p className="text-sm leading-relaxed text-gray-400">
               প্রাকৃতিক উপাদানে তৈরি প্রিমিয়াম স্কিনকেয়ার। ত্বকের যত্নে বিশ্বস্ত নাম BioGlow।

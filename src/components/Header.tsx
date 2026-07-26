@@ -11,16 +11,12 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 bg-gradient-to-br from-[#198754] to-emerald-400 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:shadow-[#198754]/20 transition-all duration-300">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <span className="text-2xl font-bold tracking-tight">
-            <span className="text-[#198754]">Bio</span>
-            <span className="text-emerald-500">Glow</span>
-          </span>
+        <Link href="/" className="flex items-center group">
+          <img
+            src="https://i.postimg.cc/TYc2LBv0/file-0000000099a88230b1470036d1ca89f6-edit-223370318576091.png"
+            alt="BioGlow"
+            className="h-10 w-auto object-contain"
+          />
         </Link>
 
         {/* Desktop Action Buttons */}
