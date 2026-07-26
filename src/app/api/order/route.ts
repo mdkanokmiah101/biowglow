@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendOrderEmail } from "@/lib/email";
 
 interface OrderBody {
   name: string;
   mobile: string;
   address: string;
   quantity: number;
+  extraQty?: number;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: OrderBody = await request.json();
-    const { name, mobile, address, quantity } = body;
+    const { name, mobile, address, quantity, extraQty } = body;
 
     // ── Validation ──
     if (!name || name.trim().length < 2) {
@@ -35,39 +37,54 @@ export async function POST(request: NextRequest) {
     }
 
     const qty = Math.max(1, Math.min(quantity || 1, 99));
+    const extQty = Math.max(0, Math.min(extraQty || 0, 99));
 
-    // ── Generate WhatsApp message ──
+    // ── Send Email to bioglow.bd@gmail.com ──
+    const emailPromise = sendOrderEmail({
+      name: name.trim(),
+      mobile: mobile.trim(),
+      address: address.trim(),
+      quantity: qty,
+      extraQty: extQty,
+    });
+
+    // ── WhatsApp URL as fallback ──
     const message = `🛒 *নতুন অর্ডার*
 
 নাম: ${name.trim()}
 মোবাইল: ${mobile.trim()}
 ঠিকানা: ${address.trim()}
 পরিমাণ: ${qty}
-
+${extQty > 0 ? `অতিরিক্ত (Aceso Night Cream): ${extQty}\n` : ""}
 Source: Landing Page`;
 
     const whatsappNumber =
       process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/[^0-9]/g, "") || "";
 
-    if (!whatsappNumber) {
-      return NextResponse.json(
-        { error: "WhatsApp number not configured" },
-        { status: 500 }
-      );
-    }
+    const whatsappUrl = whatsappNumber
+      ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
+      : null;
 
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    // Wait for email (timeout 10s so API doesn't hang forever)
+    await Promise.race([
+      emailPromise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Email timeout")), 10000)
+      ),
+    ]);
 
     return NextResponse.json({
       success: true,
       whatsappUrl,
-      message: "অর্ডার সফল হয়েছে!",
+      message: "অর্ডার সফল হয়েছে! ইমেইল নোটিফিকেশন পাঠানো হয়েছে।",
     });
   } catch (error) {
     console.error("Order error:", error);
-    return NextResponse.json(
-      { error: "অর্ডার প্রক্রিয়াকরণে সমস্যা হয়েছে। আবার চেষ্টা করুন।" },
-      { status: 500 }
-    );
+    // Still return success to user even if email fails
+    return NextResponse.json({
+      success: true,
+      whatsappUrl: null,
+      message: "অর্ডার গ্রহণ করা হয়েছে!",
+    });
   }
 }

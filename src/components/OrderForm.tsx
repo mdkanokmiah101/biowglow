@@ -52,7 +52,9 @@ export default function OrderForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
@@ -66,16 +68,48 @@ export default function OrderForm() {
       formData.extraQty
     );
 
-    const message = generateOrderMessage({
-      name: formData.name.trim(),
-      mobile: formData.mobile.trim(),
-      address: formData.address.trim(),
-      quantity: formData.quantity,
-      extraQty: formData.extraQty,
-    });
+    try {
+      // Call API — sends email to bioglow.bd@gmail.com
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          mobile: formData.mobile.trim(),
+          address: formData.address.trim(),
+          quantity: formData.quantity,
+          extraQty: formData.extraQty,
+        }),
+      });
 
-    const waUrl = getWhatsAppUrl(message);
-    window.open(waUrl, "_blank");
+      const data = await res.json();
+
+      if (data.whatsappUrl) {
+        window.open(data.whatsappUrl, "_blank");
+      }
+
+      setSubmitSuccess(true);
+      setFormData({
+        name: "",
+        mobile: "",
+        address: "",
+        quantity: 1,
+        extraQty: 0,
+      });
+    } catch (err) {
+      console.error("Submit error:", err);
+      // Fallback: open WhatsApp directly
+      const message = generateOrderMessage({
+        name: formData.name.trim(),
+        mobile: formData.mobile.trim(),
+        address: formData.address.trim(),
+        quantity: formData.quantity,
+        extraQty: formData.extraQty,
+      });
+      const waUrl = getWhatsAppUrl(message);
+      window.open(waUrl, "_blank");
+    }
+
     setIsSubmitting(false);
   };
 
@@ -316,18 +350,26 @@ export default function OrderForm() {
             </div>
           </div>
 
+          {/* Success Message */}
+          {submitSuccess && (
+            <div className="rounded-xl bg-green-50 border border-green-200 p-4 text-center mb-4">
+              <p className="text-green-700 font-bold text-lg">✅ অর্ডার সফল হয়েছে!</p>
+              <p className="text-green-600 text-sm mt-1">আমরা খুব শীঘ্রই আপনার সাথে যোগাযোগ করব।</p>
+            </div>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || submitSuccess}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:bg-green-700 hover:shadow-xl active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <ShoppingCart className="h-5 w-5" />
-            {isSubmitting ? "প্রসেসিং..." : "WhatsApp এ অর্ডার কনফার্ম করুন"}
+            {isSubmitting ? "প্রসেসিং..." : submitSuccess ? "অর্ডার কনফার্ম হয়েছে ✅" : "অর্ডার কনফার্ম করুন"}
           </button>
 
           <p className="mt-3 text-center text-xs text-gray-400">
-            ফর্ম সাবমিট করলে আপনার তথ্য অর্ডার প্রসেসিংয়ের জন্য WhatsApp এ শেয়ার হবে
+            ফর্ম সাবমিট করলে আপনার তথ্য ইমেইলে পাঠানো হবে এবং WhatsApp এ নোটিফিকেশন যাবে
           </p>
 
           {/* Trust Badges */}
