@@ -148,10 +148,10 @@ export default function Hero() {
               {/* Glow behind video */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#198754]/20 to-[#FFD400]/20 blur-3xl" />
 
-              {/* Streamable Video Embed */}
+              {/* YouTube Shorts Video Embed */}
               <div className="relative z-10 overflow-hidden rounded-2xl shadow-2xl aspect-[9/16] bg-gray-100">
                 <iframe
-                  src="https://streamable.com/e/56ybct"
+                  src="https://www.youtube.com/embed/BhEAoVsf5r0?autoplay=1&mute=1&loop=1&playlist=BhEAoVsf5r0&rel=0&showinfo=0&modestbranding=1"
                   width="100%"
                   height="100%"
                   style={{ border: 'none' }}
