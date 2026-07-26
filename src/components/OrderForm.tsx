@@ -17,6 +17,7 @@ export default function OrderForm() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   // Price calculations
   const unitPrice = config.product.price;
@@ -52,8 +53,6 @@ export default function OrderForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -69,8 +68,39 @@ export default function OrderForm() {
     );
 
     try {
-      // Call API — sends email to bioglow.bd@gmail.com
-      const res = await fetch("/api/order", {
+      // ── Send Email via FormSubmit (browser-to-browser) ──
+      const extraQty = formData.extraQty || 0;
+      const unitPrice = 650;
+      const extraPrice = 349;
+      const subtotal = unitPrice * formData.quantity;
+      const extraTotal = extraPrice * extraQty;
+      const total = subtotal + extraTotal;
+
+      const emailPayload = {
+        _to: "bioglow.bd@gmail.com",
+        _subject: `🛒 নতুন অর্ডার — ${formData.name.trim()} (${formData.mobile.trim()})`,
+        _template: "table",
+        _captcha: "false",
+        _autoresponse: "আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+        "👤 নাম": formData.name.trim(),
+        "📱 মোবাইল": formData.mobile.trim(),
+        "📍 ঠিকানা": formData.address.trim(),
+        "📦 পরিমাণ (4 in 1 কম্বো)": `${formData.quantity} সেট`,
+        ...(extraQty > 0 ? { "🧴 Aceso Night Cream": `${extraQty} পিস` } : {}),
+        "💰 মোট মূল্য": `৳${total.toLocaleString()}`,
+        "🆔 অর্ডার ID": `BIO-${Date.now().toString(36).toUpperCase()}`,
+        "🌐 সোর্স": "BioGlow Landing Page",
+      };
+
+      // Fire-and-forget — don't block on email
+      fetch("https://formsubmit.co/ajax/bioglow.bd@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(emailPayload),
+      }).catch(() => {});
+
+      // ── Also call our API (for WhatsApp) ──
+      fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -80,13 +110,7 @@ export default function OrderForm() {
           quantity: formData.quantity,
           extraQty: formData.extraQty,
         }),
-      });
-
-      const data = await res.json();
-
-      if (data.whatsappUrl) {
-        window.open(data.whatsappUrl, "_blank");
-      }
+      }).catch(() => {});
 
       setSubmitSuccess(true);
       setFormData({
@@ -98,7 +122,7 @@ export default function OrderForm() {
       });
     } catch (err) {
       console.error("Submit error:", err);
-      // Fallback: open WhatsApp directly
+      // Fallback: open WhatsApp
       const message = generateOrderMessage({
         name: formData.name.trim(),
         mobile: formData.mobile.trim(),
@@ -132,7 +156,7 @@ export default function OrderForm() {
             আজই অর্ডার করুন <span className="text-[#198754]">BioGlow</span>
           </h2>
           <p className="mt-3 text-lg text-gray-600">
-            নিচের ফর্মটি পূরণ করুন — আমরা WhatsApp এ অর্ডার কনফার্ম করব 📱
+            নিচের ফর্মটি পূরণ করুন — আমরা ইমেইল ও WhatsApp এ নোটিফাই হব 📧
           </p>
         </div>
 
@@ -354,7 +378,7 @@ export default function OrderForm() {
           {submitSuccess && (
             <div className="rounded-xl bg-green-50 border border-green-200 p-4 text-center mb-4">
               <p className="text-green-700 font-bold text-lg">✅ অর্ডার সফল হয়েছে!</p>
-              <p className="text-green-600 text-sm mt-1">আমরা খুব শীঘ্রই আপনার সাথে যোগাযোগ করব।</p>
+              <p className="text-green-600 text-sm mt-1">আমরা খুব শীঘ্রই আপনার সাথে যোগাযোগ করব। ইমেইল নোটিফিকেশন পাঠানো হয়েছে।</p>
             </div>
           )}
 
@@ -369,7 +393,7 @@ export default function OrderForm() {
           </button>
 
           <p className="mt-3 text-center text-xs text-gray-400">
-            ফর্ম সাবমিট করলে আপনার তথ্য ইমেইলে পাঠানো হবে এবং WhatsApp এ নোটিফিকেশন যাবে
+            ফর্ম সাবমিট করলে আপনার তথ্য ইমেইলে (bioglow.bd@gmail.com) পাঠানো হবে
           </p>
 
           {/* Trust Badges */}
