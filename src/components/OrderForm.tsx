@@ -68,39 +68,8 @@ export default function OrderForm() {
     );
 
     try {
-      // ── Send Email via FormSubmit (browser-to-browser) ──
-      const extraQty = formData.extraQty || 0;
-      const unitPrice = 650;
-      const extraPrice = 349;
-      const subtotal = unitPrice * formData.quantity;
-      const extraTotal = extraPrice * extraQty;
-      const total = subtotal + extraTotal;
-
-      const emailPayload = {
-        _to: "bioglow.bd@gmail.com",
-        _subject: `🛒 নতুন অর্ডার — ${formData.name.trim()} (${formData.mobile.trim()})`,
-        _template: "table",
-        _captcha: "false",
-        _autoresponse: "আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
-        "👤 নাম": formData.name.trim(),
-        "📱 মোবাইল": formData.mobile.trim(),
-        "📍 ঠিকানা": formData.address.trim(),
-        "📦 পরিমাণ (4 in 1 কম্বো)": `${formData.quantity} সেট`,
-        ...(extraQty > 0 ? { "🧴 Aceso Night Cream": `${extraQty} পিস` } : {}),
-        "💰 মোট মূল্য": `৳${total.toLocaleString()}`,
-        "🆔 অর্ডার ID": `BIO-${Date.now().toString(36).toUpperCase()}`,
-        "🌐 সোর্স": "BioGlow Landing Page",
-      };
-
-      // Fire-and-forget — don't block on email
-      fetch("https://formsubmit.co/ajax/bioglow.bd@gmail.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(emailPayload),
-      }).catch(() => {});
-
-      // ── Also call our API (for WhatsApp) ──
-      fetch("/api/order", {
+      // ── Call API — sends email via SMTP + WhatsApp ──
+      const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -110,7 +79,14 @@ export default function OrderForm() {
           quantity: formData.quantity,
           extraQty: formData.extraQty,
         }),
-      }).catch(() => {});
+      });
+
+      const data = await res.json();
+
+      // Also open WhatsApp if URL returned
+      if (data.whatsappUrl) {
+        window.open(data.whatsappUrl, "_blank");
+      }
 
       setSubmitSuccess(true);
       setFormData({
@@ -122,7 +98,7 @@ export default function OrderForm() {
       });
     } catch (err) {
       console.error("Submit error:", err);
-      // Fallback: open WhatsApp
+      // Fallback: open WhatsApp directly
       const message = generateOrderMessage({
         name: formData.name.trim(),
         mobile: formData.mobile.trim(),
