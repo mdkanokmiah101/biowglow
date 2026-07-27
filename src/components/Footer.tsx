@@ -3,6 +3,7 @@
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import { config } from "@/lib/config";
+import { trackPixel } from "@/lib/track";
 
 const socialLinks = [
   { label: "Facebook", href: "https://web.facebook.com/bioglowbangladesh/", icon: "facebook" },
@@ -42,6 +43,7 @@ export default function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackPixel('Contact', { content_name: `Footer ${link.label}` })}
                     className="inline-flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-[#198754]"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -54,6 +56,7 @@ export default function Footer() {
               <li className="pt-2">
                 <a
                   href={`tel:${config.contact.phone}`}
+                  onClick={() => trackPixel('Contact', { content_name: 'Footer Phone' })}
                   className="text-sm text-gray-400 transition-colors hover:text-yellow-400"
                 >
                   📞 {config.contact.phone}

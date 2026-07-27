@@ -2,6 +2,7 @@
 
 import { productData } from '@/data/product';
 import { Award, Globe, Wallet, Sparkles } from 'lucide-react';
+import { trackPixel } from '@/lib/track';
 
 const iconMap: Record<string, React.ReactNode> = {
   Award: <Award className="w-7 h-7 text-white" />,
@@ -134,6 +135,7 @@ export default function WhyChoose() {
               href="https://wa.me/8801310012097?text=Hi!%20I%20want%20to%20order%20BioGlow."
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackPixel('AddToCart', { content_name: 'WhyChoose Order', value: 650, currency: 'BDT' })}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-[#198754] to-emerald-500 text-white px-8 py-3.5 rounded-full text-sm md:text-base font-bold hover:from-emerald-600 hover:to-emerald-500 transition-all duration-300 hover:shadow-lg hover:shadow-[#198754]/25 group/btn animate-pulse hover:animate-none"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

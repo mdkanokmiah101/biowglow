@@ -180,6 +180,7 @@ export default function Home() {
         href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/[^0-9]/g, "") || "8801310012097"}?text=${encodeURIComponent("Hi! I want to order BioGlow 4 in 1 Skin Glow Combo.")}`}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => trackPixel('Contact', { content_name: 'Floating WhatsApp' })}
         className="fixed bottom-20 md:bottom-6 right-4 z-50 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 hover:scale-110 transition-all duration-300 animate-bounce"
         aria-label="Chat on WhatsApp"
       >

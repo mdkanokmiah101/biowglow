@@ -142,7 +142,8 @@ export default function ProductShowcase() {
             <span className="text-amber-600 text-sm font-medium">📞</span>
             <p className="text-sm text-gray-600">
               অর্ডার করতে সমস্যা হচ্ছে? সরাসরি কল করুন:{' '}
-              <a href="tel:+8801310012097" className="text-[#198754] font-bold hover:underline">
+              <a href="tel:+8801310012097" onClick={() => trackPixel('Contact', { content_name: 'ProductShowcase Call' })}
+                className="text-[#198754] font-bold hover:underline">
                 +880 13100-12097
               </a>
             </p>

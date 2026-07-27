@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Phone, MessageCircle, ShoppingCart, Menu, X } from 'lucide-react';
+import { trackPixel } from '@/lib/track';
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -22,7 +23,8 @@ export default function Header() {
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="tel:+8801310012097"
+            href="tel:+880****2097"
+            onClick={() => trackPixel('Contact', { content_name: 'Header Call' })}
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#198754] px-3 py-2 text-sm font-semibold text-[#198754] transition-colors hover:bg-[#198754] hover:text-white"
           >
             <Phone className="h-4 w-4" />
@@ -32,6 +34,7 @@ export default function Header() {
             href="https://wa.me/8801310012097"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackPixel('Contact', { content_name: 'Header WhatsApp' })}
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#1da851]"
           >
             <MessageCircle className="h-4 w-4" />
@@ -39,6 +42,7 @@ export default function Header() {
           </a>
           <Link
             href="#order"
+            onClick={() => trackPixel('AddToCart', { content_name: 'Header Order', value: 650, currency: 'BDT' })}
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#FFD400] px-4 py-2 text-sm font-bold text-gray-900 transition-colors hover:bg-[#e6bf00]"
           >
             <ShoppingCart className="h-4 w-4" />
@@ -62,7 +66,8 @@ export default function Header() {
         <div className="md:hidden border-t border-gray-100 bg-white px-4 pb-4 pt-2">
           <div className="flex flex-col gap-2">
             <a
-              href="tel:+8801310012097"
+              href="tel:+880****2097"
+              onClick={() => trackPixel('Contact', { content_name: 'Header Mobile Call' })}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#198754] px-4 py-2.5 text-sm font-semibold text-[#198754] transition-colors hover:bg-[#198754] hover:text-white"
             >
               <Phone className="h-4 w-4" />
@@ -72,6 +77,7 @@ export default function Header() {
               href="https://wa.me/8801310012097"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackPixel('Contact', { content_name: 'Header Mobile WhatsApp' })}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1da851]"
             >
               <MessageCircle className="h-4 w-4" />
@@ -79,8 +85,11 @@ export default function Header() {
             </a>
             <Link
               href="#order"
+              onClick={() => {
+                trackPixel('AddToCart', { content_name: 'Header Mobile Order', value: 650, currency: 'BDT' });
+                setMobileOpen(false);
+              }}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#FFD400] px-4 py-2.5 text-sm font-bold text-gray-900 transition-colors hover:bg-[#e6bf00]"
-              onClick={() => setMobileOpen(false)}
             >
               <ShoppingCart className="h-4 w-4" />
               অর্ডার করুন

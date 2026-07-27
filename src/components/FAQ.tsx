@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, MessageCircle } from "lucide-react";
 import { productData } from "@/data/product";
+import { trackPixel } from "@/lib/track";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -75,6 +76,7 @@ export default function FAQ() {
               href="https://wa.me/8801310012097"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackPixel('Contact', { content_name: 'FAQ WhatsApp' })}
               className="inline-flex items-center gap-2 font-medium text-green-600 underline underline-offset-2 transition-colors hover:text-green-700"
             >
               <MessageCircle className="w-4 h-4" />

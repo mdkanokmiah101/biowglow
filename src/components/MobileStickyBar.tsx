@@ -18,6 +18,7 @@ export default function MobileStickyBar() {
         {/* Call Button */}
         <a
           href={`tel:${config.contact.phone}`}
+          onClick={() => trackPixel('Contact', { content_name: 'StickyBar Call' })}
           className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 text-white transition-colors hover:bg-green-700 active:bg-green-800"
         >
           <Phone className="h-5 w-5" />
@@ -29,6 +30,7 @@ export default function MobileStickyBar() {
           href={`https://wa.me/${config.whatsapp.number.replace(/[^0-9]/g, "")}`}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackPixel('Contact', { content_name: 'StickyBar WhatsApp' })}
           className="flex flex-1 flex-col items-center justify-center gap-0.5 border-x border-green-700 py-2.5 text-white transition-colors hover:bg-green-700 active:bg-green-800"
         >
           <MessageCircle className="h-5 w-5" />
