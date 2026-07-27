@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     const qty = Math.max(1, Math.min(quantity || 1, 99));
     const extQty = Math.max(0, Math.min(extraQty || 0, 99));
 
-    // ── Send Email to bioglow.bd@gmail.com ──
+    // ── Send Email via SMTP — fire & don't block too long ──
     const emailPromise = sendOrderEmail({
       name: name.trim(),
       mobile: mobile.trim(),
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       extraQty: extQty,
     });
 
-    // ── WhatsApp URL as fallback ──
+    // ── WhatsApp URL as optional fallback ──
     const message = `🛒 *নতুন অর্ডার*
 
 নাম: ${name.trim()}
